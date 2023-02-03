@@ -1,0 +1,61 @@
+const DataTypes = require('sequelize').DataTypes
+const _car = require('./car')
+const _order = require('./order')
+const _product = require('./product')
+const _product_in_cart = require('./product_in_cart')
+const _product_in_order = require('./product_in_order')
+const _user = require('./user')
+
+function initModels(sequelize) {
+  const user = _user(sequelize, DataTypes)
+  const car = _car(sequelize, DataTypes)
+  const order = _order(sequelize, DataTypes)
+  const product = _product(sequelize, DataTypes)
+  const product_in_cart = _product_in_cart(sequelize, DataTypes)
+  const product_in_order = _product_in_order(sequelize, DataTypes)
+
+  product_in_cart.belongsTo(car, { as: 'cart', foreignKey: 'cart_id' })
+  car.hasMany(product_in_cart, {
+    as: 'product_in_carts',
+    foreignKey: 'cart_id',
+  })
+  product_in_order.belongsTo(order, { as: 'order', foreignKey: 'order_id' })
+  order.hasMany(product_in_order, {
+    as: 'product_in_orders',
+    foreignKey: 'order_id',
+  })
+  product_in_cart.belongsTo(product, {
+    as: 'product',
+    foreignKey: 'product_id',
+  })
+  product.hasMany(product_in_cart, {
+    as: 'product_in_carts',
+    foreignKey: 'product_id',
+  })
+  product_in_order.belongsTo(product, {
+    as: 'product',
+    foreignKey: 'product_id',
+  })
+  product.hasMany(product_in_order, {
+    as: 'product_in_orders',
+    foreignKey: 'product_id',
+  })
+  car.belongsTo(user, { as: 'user', foreignKey: 'user_id' })
+  user.hasMany(car, { as: 'cars', foreignKey: 'user_id' })
+  order.belongsTo(user, { as: 'user', foreignKey: 'user_id' })
+  user.hasMany(order, { as: 'orders', foreignKey: 'user_id' })
+  product.belongsTo(user, { as: 'user', foreignKey: 'user_id' })
+  user.hasMany(product, { as: 'products', foreignKey: 'user_id' })
+
+  return {
+    user,
+    car,
+    order,
+    product,
+    product_in_cart,
+    product_in_order,
+  }
+}
+module.exports = initModels
+module.exports.initModels = initModels
+module.exports.default = initModels
