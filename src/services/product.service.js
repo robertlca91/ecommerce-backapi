@@ -1,31 +1,54 @@
-const { user } = require('../models/index')
 const models = require('../models/index')
-require('dotenv').config()
 
-class ProductService {
-  static async createProduct(newproduct) {
+class ProductsServices {
+  static async createProduct(newProduct) {
     try {
-      const result = await models.product.create(newproduct)
+      const result = await models.product.create(newProduct)
       return result
     } catch (error) {
-      throw error``
+      throw error
     }
   }
-  static async getAllProducts() {
+
+  static async getProductsAvailable() {
     try {
       const result = await models.product.findAll({
+        where: { isvailable: true },
+        attributes: { exclude: ['user_id'] },
         include: {
-          attributes: ['username'],
-          model: user,
+          model: models.user,
           as: 'user',
+          attributes: ['username'],
         },
       })
-      const result2 = result.filter((item) => item.available_qty > 0)
-      return result2
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
+  static async addProductToCart(newProductInCart) {
+    try {
+      const result = await models.product_in_order.create(newProductInCart)
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
+  static async purchased(id) {
+    try {
+      const result = await models.product_in_cart.update(
+        { purchase_completed: true },
+        {
+          where: { cart_id: id },
+        }
+      )
+      return result
     } catch (error) {
       throw error
     }
   }
 }
 
-module.exports = ProductService
+module.exports = ProductsServices
