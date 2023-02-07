@@ -27,14 +27,7 @@ class ProductsServices {
     }
   }
 
-  static async addProductToCart(newProductInCart) {
-    try {
-      const result = await models.product_in_order.create(newProductInCart)
-      return result
-    } catch (error) {
-      throw error
-    }
-  }
+
 
   static async purchased(id) {
     try {

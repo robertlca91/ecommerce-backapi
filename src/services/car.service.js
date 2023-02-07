@@ -3,7 +3,6 @@ const models = require('../models/index')
 class CartService {
   static async addProductToCart(newProductInCart, id) {
     try {
-      console.log(newProductInCart)
       const car = await models.car.findOne({ where: { user_id: id } })
       newProductInCart.cart_id = car?.dataValues.id
 
@@ -46,11 +45,11 @@ class CartService {
         include: {
           model: models.car,
           attributes: { exclude: ['user_id'] },
-          as: 'carts',
+          as: 'cars',
           include: {
             model: models.product_in_cart,
             attributes: { exclude: ['cart_id', 'product_id'] },
-            as: 'products_in_carts',
+            as: 'product_in_carts',
             include: {
               model: models.product,
               as: 'product',
